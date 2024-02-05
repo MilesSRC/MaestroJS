@@ -1,12 +1,17 @@
 {
   "name": "guardianframework",
   "version": "1.0.0",
-  "description": "",
+  "description": "A fast and simple discord.js framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "MilesSRC",
+  "license": "ISC",
+  "devDependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "typescript": "^5.3.3"
+  }
 }
