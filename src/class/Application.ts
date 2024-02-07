@@ -48,6 +48,9 @@ export class Application {
         // Load commands handling (Each command is already ready, just need to hook to interactionCreate)
         this.startWatchingCommands();
 
+        // Load events handling
+        this.startWatchingEvents();
+
         // Load settings
         this.settings = {
             debug: options.debug || false,
@@ -80,6 +83,12 @@ export class Application {
                 if(!interaction.replied)
                     interaction.reply({ content: "An error occured while executing this command." });
             });
+        });
+    }
+
+    startWatchingEvents(){
+        this.events.forEach((event: Event) => {
+            this.client.on(event.getName(), (...args: any) => event.getHandler()(this, ...args));
         });
     }
 

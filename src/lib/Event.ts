@@ -20,6 +20,10 @@ export class Event {
         this.handler = options.handler;
     }
 
+    public getHandler(): (app: Application, ...args: any) => any {
+        return this.handler;
+    }
+
     public getName(): string {
         return this.name;
     }
