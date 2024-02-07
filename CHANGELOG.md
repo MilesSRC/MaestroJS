@@ -1,5 +1,12 @@
 # maestrojs
 
+## 0.0.3
+
+### Patch Changes
+
+- ba88c38: Change maestrojs to maestro.js
+- 4486760: Remove dotenv, add event handling
+
 ## 0.0.2
 
 ### Patch Changes

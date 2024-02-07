@@ -1,6 +1,6 @@
 {
   "name": "@dubbyyt/maestro.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A fast and simple discord.js framework",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
