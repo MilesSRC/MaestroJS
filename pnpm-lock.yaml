@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  discord-api-types:
+    specifier: ^0.37.68
+    version: 0.37.68
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
@@ -1131,6 +1134,10 @@ packages:
 
   /discord-api-types@0.37.61:
     resolution: {integrity: sha512-o/dXNFfhBpYHpQFdT6FWzeO7pKc838QeeZ9d91CfVAtpr5XLK4B/zYxQbYgPdoMiTDvJfzcsLW5naXgmHGDNXw==}
+    dev: false
+
+  /discord-api-types@0.37.68:
+    resolution: {integrity: sha512-KmRAd3kjsgHnkani0R6RvLPIyE3T1ExvVquCyWWautU4tbFmGyici14h9L/rqF6DR4LAi/+R8ITWdX2B+MpkrA==}
     dev: false
 
   /discord.js@14.14.1:
