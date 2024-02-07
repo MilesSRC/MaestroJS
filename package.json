@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
   "name": "maestro.js",
   "version": "0.0.1",
+=======
+  "name": "maestrojs",
+  "version": "0.0.2",
+>>>>>>> f49bcaba9287ae3ca7985ef905a51e2ad1cb6f79
   "description": "A fast and simple discord.js framework",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
