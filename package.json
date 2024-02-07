@@ -1,5 +1,5 @@
 {
-  "name": "maestro.js",
+  "name": "@dubbyyt/maestro.js",
   "version": "0.0.2",
   "description": "A fast and simple discord.js framework",
   "main": "dist/index.js",
