@@ -1,17 +1,24 @@
 {
-  "name": "guardianframework",
-  "version": "1.0.0",
+  "name": "maestrojs",
+  "version": "0.0.1",
   "description": "A fast and simple discord.js framework",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "lint": "tsc"
   },
   "keywords": [],
   "author": "MilesSRC",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "discord.js": "^14.14.1",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.1"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   }
 }
