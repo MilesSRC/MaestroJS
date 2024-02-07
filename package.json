@@ -1,6 +1,6 @@
 {
   "name": "maestrojs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A fast and simple discord.js framework",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
