@@ -7,8 +7,14 @@ export interface EventOptions {
 
 export class Event {
     private name: string;
-    private handler: (app: Application, ...args: any) => any;
+    public execute: (app: Application, ...args: any) => any;
 
+    /**
+     * A discord.js supported event
+     * @param options {EventOptions} The options for the event
+     * @param options.name {string} The name of the event (e.g. ready, messageCreate, etc.)
+     * @param options.handler {(app: Application, ...args: any) => any} The handler for the event
+     */
     constructor(options: EventOptions){
         if(!options.name)
             throw new TypeError("Events must have a name");
@@ -17,13 +23,13 @@ export class Event {
             throw new TypeError("Events must have a handler")
 
         this.name = options.name;
-        this.handler = options.handler;
+        this.execute = options.handler;
     }
 
-    public getHandler(): (app: Application, ...args: any) => any {
-        return this.handler;
-    }
-
+    /**
+     * Get the name of the event
+     * @returns {string} The name of the event
+     */
     public getName(): string {
         return this.name;
     }

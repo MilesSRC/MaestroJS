@@ -21,8 +21,28 @@ export class Application {
     // Settings
     private settings: AppSettings;
 
+    /**
+     * Creates a new Maestro Application instance.
+     * @param options The options for the Application.
+     * @example
+     * const app = new Application({
+     *   name: "My Application",
+     *   commands: new FileBasedCommands("./commands"),
+     *   events: new FileBasedEvents("./events"),
+     *   intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.DirectMessages],
+     *   settings: { // Settings field is optional
+     *     debug: true,
+     *     useSharding: false,
+     *     shardCount: 1,
+     *     deferReply: true
+     *   }
+     * });
+     */
     constructor(options: ApplicationOptions){
         this.name = options.name;
+
+        // Settings
+        this.settings = Object.assign(defaultSettings, options.settings);
         
         // Commands
         this.commands = new Map<string, Command>();
@@ -50,17 +70,12 @@ export class Application {
 
         // Load events handling
         this.startWatchingEvents();
-
-        // Load settings
-        this.settings = {
-            debug: options.debug || false,
-            useSharding: options.useSharding || false,
-            shardCount: options.useSharding ? (options.shardCount || 0) : 1, // Default to 1 if sharding is not enabled, if enabled without shard count, automatically scale
-            deferReply: options.deferReplies || false,
-        };
     }
 
-    startWatchingCommands(){
+    /**
+     * Starts watching for commands and executes them.
+     */
+    private startWatchingCommands(){
         this.client.on("interactionCreate", async (interaction) => {
             if(!interaction.isCommand()) return;
             if(!this.commands.has(interaction.commandName)) return;
@@ -86,12 +101,24 @@ export class Application {
         });
     }
 
-    startWatchingEvents(){
+    /**
+     * Starts watching for events and executes them.
+     */
+    private startWatchingEvents(){
         this.events.forEach((event: Event) => {
-            this.client.on(event.getName(), (...args: any) => event.getHandler()(this, ...args));
+            this.client.on(event.getName(), (...args: any) => event.execute(this, ...args));
         });
     }
 
+    /**
+     * Authorizes the bot to the discord API.
+     * @param {string} token Optional. If not provided, it will use the token from the environment variable. (BOT_TOKEN)
+     * @throws {TypeError} If no valid bot token is provided.
+     * @throws {Error} If the bot fails to login.
+     * @example
+     * await app.authorize()
+     * await app.authorize("TOKEN")
+     */
     public async authorize(token?: string) {
         if(!token && !process.env.BOT_TOKEN)
             throw new TypeError("No valid bot token provided.");
@@ -124,29 +151,58 @@ export class Application {
         });
     }
 
-    getClient(){
+    /**
+     * Deauthorized the client with Discord.JS and Maestro
+     */
+    public async deauthorize(){
+        await this.client.destroy();
+        this.authorized = false;
+    }
+
+    /**
+     * Returns whether the bot is authorized or not.
+     */
+    public isAuthorized(): boolean {
+        return this.authorized && this.client.user != null;
+    }
+
+    /**
+     * Returns the underlying discord.js Client instance.
+     * @returns {Client} The discord.js Client.
+     */
+    public getClient(){
         return this.client;
+    }
+
+    /**
+     * Returns the name of the application.
+     * @returns {string} The name of the application.
+     */
+    public getName(){
+        return this.name;
     }
 } 
 
 export interface ApplicationOptions {
-    useSharding: boolean;
-    shardCount: number;
-    deferReplies: boolean;
-    debug: boolean;
-
     name: string;
 
-    commands: FileBasedCommands | Command[] | undefined;
-    events: FileBasedEvents | Event[] | undefined;
+    commands?: FileBasedCommands | Command[];
+    events?: FileBasedEvents | Event[];
 
-    intents?: GatewayIntentBits[] | undefined;
+    intents?: GatewayIntentBits[];
+    settings?: AppSettings;
 }
 
 export interface AppSettings {
-    debug: boolean;
-    useSharding: boolean;
-    shardCount: number;
+    debug?: boolean;
+    useSharding?: boolean;
+    shardCount?: number;
+    deferReply?: boolean;
+}
 
-    deferReply: boolean;
+const defaultSettings: AppSettings = {
+    debug: false,
+    useSharding: false,
+    shardCount: 1,
+    deferReply: false,
 }
