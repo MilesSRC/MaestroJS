@@ -1,5 +1,11 @@
 # maestrojs
 
+## 0.0.5
+
+### Patch Changes
+
+- f405f24: Fix npm?
+
 ## 0.0.4
 
 ### Patch Changes
