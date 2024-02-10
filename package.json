@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MilesSRC/MaestroJS"
+    "url": "git+https://github.com/MilesSRC/MaestroJS.git"
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
@@ -26,5 +26,9 @@
     "@changesets/cli": "^2.27.1",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
   }
 }
