@@ -1,5 +1,11 @@
 # maestrojs
 
+## 0.0.8
+
+### Patch Changes
+
+- 96aca69: CI Fix
+
 ## 0.0.7
 
 ### Patch Changes
