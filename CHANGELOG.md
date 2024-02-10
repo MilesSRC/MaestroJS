@@ -1,5 +1,11 @@
 # maestrojs
 
+## 0.0.6
+
+### Patch Changes
+
+- 9ad7bfb: CI publishing
+
 ## 0.0.5
 
 ### Patch Changes
