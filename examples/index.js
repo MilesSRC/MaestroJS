@@ -15,7 +15,6 @@ const app = new Application({
 
     // Application Data
     commands: new FileBasedCommands(__dirname + '/commands/'),
-    events: new FileBasedEvents(__dirname + '/events/'),
 });
 
 // Add dotenv for automatic token acquiral (optional)

@@ -1,4 +1,4 @@
-import { Command } from "./Command";
+import { Command } from "../class/Command";
 import path from 'path';
 import fs from 'fs';
 
@@ -38,6 +38,21 @@ export class FileBasedCommands {
         let files = fs.readdirSync(this.path);
         files.forEach(file => {
             let command = require(path.join(this.path, file));
+
+            // Ensure command is properly required
+            command = command.default || command;
+
+            // Ensure comamnd is a command class
+            if(!(command instanceof Command))
+                throw new TypeError("Commands must be a command class provided by Maestro.");
+
+            // Ensure command is properly formatted with correct data
+            if(!command.data)
+                throw new TypeError("Commands must have a data property.");
+
+            if(!command.execute)
+                throw new TypeError("Commands must have an execute method.");
+
             this.commands.push(command);
         });
     }
