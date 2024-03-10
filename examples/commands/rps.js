@@ -1,7 +1,7 @@
 // Rock Paper Scissors Command
 
 const { SlashCommandBuilder, SlashCommandStringOption } = require("discord.js");
-const { Command } = require('../../dist/lib/Command');
+const { Command } = require('../../dist/index');
 
 module.exports = new Command({
     data: new SlashCommandBuilder()

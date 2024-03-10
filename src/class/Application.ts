@@ -4,7 +4,7 @@ import { Event } from "../lib/Event";
 import { FileBasedEvents } from "../lib/FileBasedEvents";
 
 /* Discord JS */
-import { Client, GatewayIntentBits, IntentsBitField, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+import { Client, GatewayIntentBits, IntentsBitField, Interaction, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
 import { REST } from "discord.js";
 import { Routes } from "discord-api-types/v9";
 
@@ -49,7 +49,7 @@ export class Application {
         
         // Commands
         this.commands = new Map<string, Command>();
-        options.commands?.forEach((cmd: Command) => this.commands.set(cmd.getName(), cmd));
+        options.commands?.forEach((cmd: Command) => this.commands.set(cmd.data.name, cmd));
 
         // Events
         this.events = new Map<string, Event>();
@@ -79,9 +79,11 @@ export class Application {
      * Starts watching for commands and executes them.
      */
     private startWatchingCommands(){
-        this.client.on("interactionCreate", async (interaction) => {
+        this.client.on("interactionCreate", async (interaction: Interaction) => {
             if(!interaction.isCommand()) return;
+
             if(!this.commands.has(interaction.commandName)) return;
+
             if(interaction.guild && !interaction.guild.available) 
                 return console.warn("Guild is not available, skipping command execution.");
 
@@ -115,7 +117,11 @@ export class Application {
 
                 if(interaction.replied || interaction.deferred)
                     interaction.user.send({ content: "An error occured while executing your previous command." }).catch(err => {
-                        /* Empty, privacy settings */
+                        this.fireEvent("InteractionError", {
+                            error: error,
+                            interaction: interaction,
+                            app: this
+                        })
                     });
 
                 if(!interaction.replied)
@@ -131,6 +137,10 @@ export class Application {
         this.events.forEach((event: Event) => {
             this.client.on(event.getName(), (...args: any) => event.execute(this, ...args));
         });
+    }
+
+    private fireEvent(name: string, ...args: any){
+        this.events.get(`${name}`)?.execute(this, ...args);
     }
 
     /**

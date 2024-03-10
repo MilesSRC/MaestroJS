@@ -7,7 +7,7 @@ export interface CommandOptions {
 }
 
 export class Command {
-    private data: SlashCommandBuilder;
+    public data: SlashCommandBuilder;
     public execute: (interaction: CommandInteraction<CacheType>, app: Application) => any; // Update the type of 'execute'
 
     /**

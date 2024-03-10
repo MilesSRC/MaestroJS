@@ -6,7 +6,7 @@ export interface EventOptions {
 }
 
 export class Event {
-    private name: string;
+    public readonly name: string;
     public execute: (app: Application, ...args: any) => any;
 
     /**
@@ -16,6 +16,9 @@ export class Event {
      * @param options.handler {(app: Application, ...args: any) => any} The handler for the event
      */
     constructor(options: EventOptions){
+        if(!options)
+            throw new TypeError("Events must have options");
+
         if(!options.name)
             throw new TypeError("Events must have a name");
 

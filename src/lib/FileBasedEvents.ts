@@ -38,7 +38,22 @@ export class FileBasedEvents {
         let files = fs.readdirSync(this.path);
         files.forEach(file => {
             let event = require(path.join(this.path, file));
-            this.events.push(new event());
+
+            // Ensure event is properly required
+            event = event.default || event;
+
+            // Ensure event is a event class
+            if (!(event instanceof Event))
+                throw new TypeError("Events must be a class that extends the Event class.");
+
+            // Ensure event is properly formatted with correct data
+            if (!event.name)
+                throw new TypeError("Events must have a name property.");
+
+            if (!event.execute)
+                throw new TypeError("Events must have a handler method.");
+
+            this.events.push(event);
         });
     }
 }

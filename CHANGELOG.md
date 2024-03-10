@@ -1,5 +1,11 @@
 # maestrojs
 
+## 0.0.10
+
+### Patch Changes
+
+- 2c05411: Fix Issues
+
 ## 0.0.9
 
 ### Patch Changes
