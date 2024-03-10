@@ -1,3 +1,0 @@
-# Development Journal 1:<br>Basic theroy, usage, and structure.
-<p>Back in the early days of Discord.js, you could make a bot with less than 14 lines. Now-a-days, Discord.JS has so much boiler plate and setup. Doing this same thing over and over again when creating a new bot is tendious. I frequently made new discord bots, and as Discord.JS was updated and adapted with new API changes, it grew in size, making it difficult to focus on the after-the-setup part of commands and special functionalities (where it is important). </p>
-<p>Easily creating a discord bot is the objective for this wrapper. While maintaining flexibility, scalability, and overall compatability with Discord.JS. Ensuring there are ways to access the underlying discord.js API is important.</p>

@@ -4,20 +4,25 @@ import { Event } from "../lib/Event";
 import { FileBasedEvents } from "../lib/FileBasedEvents";
 
 /* Discord JS */
-import { Client, GatewayIntentBits, IntentsBitField, RESTPostAPIApplicationCommandsJSONBody, SharedSlashCommandOptions } from "discord.js";
+import { Client, GatewayIntentBits, IntentsBitField, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
 import { REST } from "discord.js";
 import { Routes } from "discord-api-types/v9";
 
+// Events
+import { EventEmitter } from "events";
+
 export class Application {
     private name: string = "Unnamed Application";
-    private commands: Map<string, Command> = new Map<string, Command>();
-    private events: Map<string, Event> = new Map<string, Event>();
+    public commands: Map<string, Command> = new Map<string, Command>();
+    public events: Map<string, Event> = new Map<string, Event>();
 
     private client: Client;
     private token: string = "";
     private authorized: boolean = false;
 
-    // TODO: Create sharding system
+    // Events
+    private emitter: EventEmitter = new EventEmitter();
+
     // Settings
     private settings: AppSettings;
 
@@ -32,8 +37,6 @@ export class Application {
      *   intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.DirectMessages],
      *   settings: { // Settings field is optional
      *     debug: true,
-     *     useSharding: false,
-     *     shardCount: 1,
      *     deferReply: true
      *   }
      * });
@@ -86,9 +89,29 @@ export class Application {
                 interaction.deferReply({ ephemeral: true });
 
             let command: Command = this.commands.get(interaction.commandName) as Command;
-            command.execute(interaction, this).catch((error: Error) => {
+            command.execute(interaction, this).catch(async (error: Error) => {
                 if(this.settings.debug)
                     console.error(error);
+
+                this.emitter.emit("commandError", error, interaction, command);
+
+                if(this.emitter.listeners("commandError").length > 0){
+                    /* Wait for 1.5s, if the interaction was not replied to, reply with an error message. */
+                    await new Promise((resolve, reject) => {
+                        setTimeout(resolve, 1500)
+                    });
+
+                    if(!interaction.replied && !interaction.deferred){
+                        interaction.reply({ content: "An error occured while executing your previous command." }).catch(err => {
+                            /* Empty, privacy settings */
+                        });
+
+                        if(this.settings.debug)
+                            console.warn("An error occured while executing a command, and a error handler was found, but the interaction was not replied to.")
+
+                        return;
+                    }
+                }
 
                 if(interaction.replied || interaction.deferred)
                     interaction.user.send({ content: "An error occured while executing your previous command." }).catch(err => {
@@ -136,13 +159,19 @@ export class Application {
             let commands: RESTPostAPIApplicationCommandsJSONBody[] = [];
             this.commands.forEach((command: Command) => {
                 commands.push(command.getSlashCommand().toJSON());
+                this.emitter.emit("commandRegistered", command);
             });
 
             const rest = new REST({ version: '10' });
             rest.setToken(this.token);
 
             rest.put(Routes.applicationCommands(this.client.user?.id || ""), { body: commands })
-                .then(() => console.log('Successfully registered application commands.'))
+                .then(() => {
+                    if(this.settings.debug)
+                        console.log("Successfully registered commands to Discord.");
+
+                    this.emitter.emit("commandsRegistered", this);
+                })
                 .catch(console.error);
 
         }).catch((err: Error) => {
@@ -181,7 +210,57 @@ export class Application {
     public getName(){
         return this.name;
     }
+
+    /**
+     * Attach an event listener to the application.
+     * @event {string} The event name.
+     * @listener {Function} The event listener.
+     * @example
+     * app.on("commandError", (error, interaction, command) => {
+     *      console.error(error);
+     * });
+     */
+    public on(event: ApplicationEvent, listener: (...args: any) => void){
+        this.emitter.on(event, listener);
+    }
+
+    /**
+     * A command error has occured within Maestro
+     * @event commandError
+     * @param error The error that occured.
+     * @param interaction The interaction that caused the error.
+     * @param command The command that caused the error.
+     * @example
+     * app.on("commandError", (error, interaction, command) => {
+     *     console.error(error);
+     * });
+     */
+
+    /**
+     * A command has been registered to Maestro
+     * @event commandRegistered
+     * @param command The command that was registered.
+     * @example
+     * app.on("commandRegistered", (command) => {
+     *    console.log(`Command ${command.getName()} has been registered.`);
+     * });
+    */
+
+    /**
+     * All commands have been registered to Maestro
+     * @event commandsRegistered
+     * @param app The application that registered the commands.
+     * @example
+     * app.on("commandsRegistered", (app) => {
+     *    console.log(`All commands have been registered to ${app.getName()}`);
+     * });
+    */
 } 
+
+export type ApplicationEvent = "commandError" | "commandsRegistered" | "commandRegistered";
+export type CommandErrorListener = (error: Error, interaction: any, command: Command) => void;
+export type CommandRegisteredListener = (command: Command) => void;
+export type CommandsRegisteredListener = (app: Application) => void;
 
 export interface ApplicationOptions {
     name: string;
@@ -195,14 +274,10 @@ export interface ApplicationOptions {
 
 export interface AppSettings {
     debug?: boolean;
-    useSharding?: boolean;
-    shardCount?: number;
     deferReply?: boolean;
 }
 
 const defaultSettings: AppSettings = {
     debug: false,
-    useSharding: false,
-    shardCount: 1,
     deferReply: false,
 }
