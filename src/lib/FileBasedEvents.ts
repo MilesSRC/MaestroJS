@@ -37,23 +37,32 @@ export class FileBasedEvents {
     private loadEvents() {
         let files = fs.readdirSync(this.path);
         files.forEach(file => {
-            let event = require(path.join(this.path, file));
+            // Ensure file is a .js file (ignore .map files and other files)
+            if(!file.endsWith('.js')) return;
 
-            // Ensure event is properly required
-            event = event.default || event;
+            try {
+                // Require the event
+                let event = require(path.join(this.path, file));
 
-            // Ensure event is a event class
-            if (!(event instanceof Event))
-                throw new TypeError("Events must be a class that extends the Event class.");
+                // Ensure event is properly required
+                event = event.default || event;
 
-            // Ensure event is properly formatted with correct data
-            if (!event.name)
-                throw new TypeError("Events must have a name property.");
+                // Ensure event is a event class
+                if (!(event instanceof Event))
+                    throw new TypeError("Events must be a class that extends the Event class.");
 
-            if (!event.execute)
-                throw new TypeError("Events must have a handler method.");
+                // Ensure event is properly formatted with correct data
+                if (!event.name)
+                    throw new TypeError("Events must have a name property.");
 
-            this.events.push(event);
+                if (!event.execute)
+                    throw new TypeError("Events must have a handler method.");
+
+                this.events.push(event);
+            } catch (e) {
+                console.error("Error loading event: " + file);
+                console.error(e);
+            }
         });
     }
 }
