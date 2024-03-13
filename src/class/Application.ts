@@ -91,7 +91,10 @@ export class Application {
                 interaction.deferReply({ ephemeral: true });
 
             let command: Command = this.commands.get(interaction.commandName) as Command;
-            command.execute(interaction, this).catch(async (error: Error) => {
+            this.emitter.emit("commandExecuted", interaction, command);
+            command.execute(interaction, this).then(() => {
+                this.emitter.emit("commandSuccess", interaction, command);
+            }).catch(async (error: Error) => {
                 if(this.settings.debug)
                     console.error(error);
 
@@ -99,7 +102,7 @@ export class Application {
 
                 if(this.emitter.listeners("commandError").length > 0){
                     /* Wait for 1.5s, if the interaction was not replied to, reply with an error message. */
-                    await new Promise((resolve, reject) => {
+                    await new Promise((resolve) => {
                         setTimeout(resolve, 1500)
                     });
 
@@ -109,7 +112,7 @@ export class Application {
                         });
 
                         if(this.settings.debug)
-                            console.warn("An error occured while executing a command, and a error handler was found, but the interaction was not replied to.")
+                            console.warn("An error occured while executing a command, and an error handler was found, but the interaction was not replied to.")
 
                         return;
                     }
@@ -243,6 +246,28 @@ export class Application {
      * @example
      * app.on("commandError", (error, interaction, command) => {
      *     console.error(error);
+     * });
+     */
+
+    /**
+     * A command has been executed
+     * @event commandExecuted
+     * @param interaction The interaction that caused the command to be executed.
+     * @param command The command that was executed.
+     * @example
+     * app.on("commandExecuted", (interaction, command) => {
+     *   console.log(`Command ${command.getName()} has been executed by ${interaction.user.id}.`);
+     * });
+     */
+
+    /**
+     * A command has been executed successfully
+     * @event commandSuccess
+     * @param interaction The interaction that caused the command to be executed.
+     * @param command The command that was executed.
+     * @example
+     * app.on("commandSuccess", (interaction, command) => {
+     *  console.log(`Command ${command.getName()} has been successfully executed by ${interaction.user.id}.`);
      * });
      */
 

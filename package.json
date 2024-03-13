@@ -19,6 +19,7 @@
   "author": "MilesSRC",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^7.106.1",
     "discord-api-types": "^0.37.68",
     "discord.js": "^14.14.1"
   },
