@@ -1,5 +1,11 @@
 # maestrojs
 
+## 0.0.13
+
+### Patch Changes
+
+- 8b204b2: Patch requiring map files when sourced
+
 ## 0.0.12
 
 ### Patch Changes
