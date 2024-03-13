@@ -1,5 +1,11 @@
 # maestrojs
 
+## 0.0.12
+
+### Patch Changes
+
+- 11d1068: Add new events + README.md improvments
+
 ## 0.0.11
 
 ### Patch Changes
